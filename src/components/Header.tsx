@@ -11,7 +11,7 @@ const Header = () => {
               Life Clinic
             </h1>
             <p className="text-sm text-muted-foreground">
-              Cuidando da sua saúde
+              Rede de acolhimento para reprodução humana
             </p>
           </div>
         </div>
