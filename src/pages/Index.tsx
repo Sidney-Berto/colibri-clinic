@@ -1,15 +1,17 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import MenuCard from "@/components/MenuCard";
+import RedeAcolhimento from "@/components/RedeAcolhimento";
 import AgendamentoOnline from "@/components/AgendamentoOnline";
 import ConsultarAgendamento from "@/components/ConsultarAgendamento";
 import BuscarAgendaMedico from "@/components/BuscarAgendaMedico";
 import BuscarAgendaClinica from "@/components/BuscarAgendaClinica";
 import ProntuarioCliente from "@/components/ProntuarioCliente";
-import { CalendarPlus, Search, Stethoscope, Building2, FileText, Calendar } from "lucide-react";
+import { CalendarPlus, Search, Stethoscope, Building2, FileText, Calendar, Heart } from "lucide-react";
 
 type View = 
   | "menu" 
+  | "rede-acolhimento"
   | "agendamento-online" 
   | "consultar-agendamento" 
   | "buscar-medico" 
@@ -48,6 +50,8 @@ const Index = () => {
 
   const renderView = () => {
     switch (currentView) {
+      case "rede-acolhimento":
+        return <RedeAcolhimento onBack={() => setCurrentView("menu")} />;
       case "agendamento-online":
         return <AgendamentoOnline onBack={() => setCurrentView("menu")} />;
       case "consultar-agendamento":
@@ -61,6 +65,25 @@ const Index = () => {
       default:
         return (
           <div className="space-y-8 animate-fade-in">
+            {/* Rede de Acolhimento Section */}
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="text-primary" size={24} />
+                <h2 className="font-serif text-xl font-semibold text-foreground">
+                  Rede de Acolhimento
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <MenuCard
+                  title="Rede de Acolhimento"
+                  description="Conheça nossos médicos e clínicas parceiras"
+                  icon={<Heart size={24} />}
+                  onClick={() => setCurrentView("rede-acolhimento")}
+                  delay={0}
+                />
+              </div>
+            </section>
+
             {/* Agenda Online Section */}
             <section>
               <div className="flex items-center gap-3 mb-4">
@@ -77,7 +100,7 @@ const Index = () => {
                     description={item.description}
                     icon={item.icon}
                     onClick={() => setCurrentView(item.id as View)}
-                    delay={index * 100}
+                    delay={(index + 1) * 100}
                   />
                 ))}
               </div>
