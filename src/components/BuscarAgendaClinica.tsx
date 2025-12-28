@@ -2,19 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { api, Agendamento } from "@/lib/api";
 import { ArrowLeft, Building2, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface Agendamento {
-  id: string;
-  id_cliente: string;
-  crm: string;
-  cnpj: string;
-  data: string;
-  hora: string;
-}
 
 interface BuscarAgendaClinicaProps {
   onBack: () => void;
@@ -32,11 +23,7 @@ const BuscarAgendaClinica = ({ onBack }: BuscarAgendaClinicaProps) => {
     setLoading(true);
     setSearched(true);
 
-    const { data, error } = await supabase
-      .from("agenda")
-      .select("*")
-      .eq("cnpj", cnpj)
-      .order("data", { ascending: true });
+    const { data, error } = await api.getAgendaPorCnpj(cnpj);
 
     setLoading(false);
 

@@ -2,20 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { api, Agendamento } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, Search, X, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface Agendamento {
-  id: string;
-  id_cliente: string;
-  crm: string;
-  cnpj: string;
-  data: string;
-  hora: string;
-}
 
 interface ConsultarAgendamentoProps {
   onBack: () => void;
@@ -35,10 +26,7 @@ const ConsultarAgendamento = ({ onBack }: ConsultarAgendamentoProps) => {
     setMessage(null);
     setSearched(true);
 
-    const { data, error } = await supabase
-      .from("agenda")
-      .select("*")
-      .eq("id_cliente", nomeCliente);
+    const { data, error } = await api.getAgendaPorCliente(nomeCliente);
 
     setLoading(false);
 
@@ -56,12 +44,7 @@ const ConsultarAgendamento = ({ onBack }: ConsultarAgendamentoProps) => {
   const handleCancelar = async (agendamento: Agendamento) => {
     setMessage(null);
 
-    const { error } = await supabase
-      .from("agenda")
-      .delete()
-      .eq("id_cliente", agendamento.id_cliente)
-      .eq("data", agendamento.data)
-      .eq("hora", agendamento.hora);
+    const { error } = await api.cancelarAgendamento(agendamento.id);
 
     if (error) {
       setMessage({ type: "error", text: "Erro no cancelamento" });

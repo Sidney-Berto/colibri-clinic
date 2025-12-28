@@ -4,25 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { api, Medico, Clinica } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, CalendarPlus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface Medico {
-  id: string;
-  crm: string;
-  nome_medico: string;
-  especialidade: string | null;
-}
-
-interface Clinica {
-  id: string;
-  cnpj: string;
-  nome_clinica: string;
-  endereco: string | null;
-}
 
 interface AgendamentoOnlineProps {
   onBack: () => void;
@@ -50,13 +36,13 @@ const AgendamentoOnline = ({ onBack }: AgendamentoOnlineProps) => {
   }, []);
 
   const fetchMedicos = async () => {
-    const { data, error } = await supabase.from("medicos").select("*");
+    const { data, error } = await api.getMedicos();
     if (data) setMedicos(data);
     if (error) console.error("Erro ao buscar médicos:", error);
   };
 
   const fetchClinicas = async () => {
-    const { data, error } = await supabase.from("clinicas").select("*");
+    const { data, error } = await api.getClinicas();
     if (data) setClinicas(data);
     if (error) console.error("Erro ao buscar clínicas:", error);
   };
@@ -79,7 +65,7 @@ const AgendamentoOnline = ({ onBack }: AgendamentoOnlineProps) => {
     setLoading(true);
     setMessage(null);
 
-    const { error } = await supabase.from("agenda").insert({
+    const { error } = await api.criarAgendamento({
       id_cliente: nomeCliente,
       crm: selectedMedico!.crm,
       cnpj: selectedClinica!.cnpj,

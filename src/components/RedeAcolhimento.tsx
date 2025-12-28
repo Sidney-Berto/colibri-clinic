@@ -2,21 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Stethoscope, Building2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-
-interface Medico {
-  id: string;
-  crm: string;
-  nome_medico: string;
-  especialidade: string | null;
-}
-
-interface Clinica {
-  id: string;
-  cnpj: string;
-  nome_clinica: string;
-  endereco: string | null;
-}
+import { api, Medico, Clinica } from "@/lib/api";
 
 interface RedeAcolhimentoProps {
   onBack: () => void;
@@ -30,15 +16,8 @@ const RedeAcolhimento = ({ onBack }: RedeAcolhimentoProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: medicosData } = await supabase
-        .from("medicos")
-        .select("*")
-        .order("nome_medico");
-
-      const { data: clinicasData } = await supabase
-        .from("clinicas")
-        .select("*")
-        .order("nome_clinica");
+      const { data: medicosData } = await api.getMedicos();
+      const { data: clinicasData } = await api.getClinicas();
 
       if (medicosData) setMedicos(medicosData);
       if (clinicasData) setClinicas(clinicasData);
