@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, FileText, Search, Save } from "lucide-react";
 
@@ -25,11 +25,7 @@ const ProntuarioCliente = ({ onBack }: ProntuarioClienteProps) => {
     setMessage(null);
     setSearched(true);
 
-    const { data, error } = await supabase
-      .from("prontuario")
-      .select("*")
-      .eq("id_cliente", nomeCliente)
-      .maybeSingle();
+    const { data, error } = await api.getProntuario(nomeCliente);
 
     setLoading(false);
 
@@ -49,49 +45,14 @@ const ProntuarioCliente = ({ onBack }: ProntuarioClienteProps) => {
     setLoading(true);
     setMessage(null);
 
-    // Tentar atualizar primeiro
-    const { data: existingData, error: selectError } = await supabase
-      .from("prontuario")
-      .select("id")
-      .eq("id_cliente", nomeCliente)
-      .maybeSingle();
-
-    if (selectError) {
-      console.error("Erro ao verificar prontuário:", selectError);
-    }
-
-    let success = false;
-
-    if (existingData) {
-      // Atualizar registro existente
-      const { error: updateError } = await supabase
-        .from("prontuario")
-        .update({
-          descricao: descricao,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id_cliente", nomeCliente);
-
-      if (!updateError) {
-        success = true;
-      }
-    } else {
-      // Inserir novo registro
-      const { error: insertError } = await supabase
-        .from("prontuario")
-        .insert({
-          id_cliente: nomeCliente,
-          descricao: descricao,
-        });
-
-      if (!insertError) {
-        success = true;
-      }
-    }
+    const { error } = await api.salvarProntuario({
+      id_cliente: nomeCliente,
+      descricao: descricao,
+    });
 
     setLoading(false);
 
-    if (success) {
+    if (!error) {
       toast({
         title: "Sucesso",
         description: "Prontuário atualizado com sucesso!",
